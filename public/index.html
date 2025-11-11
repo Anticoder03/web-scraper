@@ -6,9 +6,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-between">
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center">
 
-  <div class="bg-white p-8 rounded-2xl shadow-md w-full max-w-lg mt-16">
+  <div class="bg-white p-8 rounded-2xl shadow-md w-full max-w-lg mt-10">
     <h1 class="text-2xl font-bold mb-4 text-center">Simple Web Scraper</h1>
 
     <label class="block mb-2 font-medium">Enter URL to Scrape:</label>
@@ -23,46 +23,9 @@
 
     <p id="status" class="text-center mt-4 text-gray-600"></p>
   </div>
-  <!-- HOW IT WORKS SECTION -->
-<section class="max-w-6xl mx-auto px-6 py-12">
-  <h2 class="text-3xl font-bold text-center mb-10">How It Works</h2>
 
-  <div class="grid md:grid-cols-3 gap-6">
-
-    <!-- Card 1 -->
-    <div class="bg-white shadow-lg rounded-xl p-6 flex flex-col items-center text-center hover:shadow-xl transition">
-      <i class="fas fa-link text-4xl text-blue-600 mb-4"></i>
-      <h3 class="text-xl font-semibold mb-2">Paste the Link</h3>
-      <p class="text-gray-600">
-        Just drop your website link into the input box — quick and simple, no extra steps.
-      </p>
-    </div>
-
-    <!-- Card 2 -->
-    <div class="bg-white shadow-lg rounded-xl p-6 flex flex-col items-center text-center hover:shadow-xl transition">
-      <i class="fas fa-sync-alt text-4xl text-green-600 mb-4"></i>
-      <h3 class="text-xl font-semibold mb-2">We Process It</h3>
-      <p class="text-gray-600">
-        The tool instantly converts your data into neatly formatted CSV & JSON files.
-      </p>
-    </div>
-
-    <!-- Card 3 -->
-    <div class="bg-white shadow-lg rounded-xl p-6 flex flex-col items-center text-center hover:shadow-xl transition">
-      <i class="fas fa-file-archive text-4xl text-yellow-600 mb-4"></i>
-      <h3 class="text-xl font-semibold mb-2">Download the ZIP</h3>
-      <p class="text-gray-600">
-        You get a ready-to-download ZIP file containing both files — clean, organized, done.
-      </p>
-    </div>
-
-  </div>
-</section>
-
-
-  <!-- ✅ Footer -->
-  <footer class="w-full text-center py-4 text-gray-600 text-sm mt-10">
-    © All Rights Reserved · <span class="font-semibold">Anticoder03</span>
+  <footer class="text-center text-gray-600 mt-10 mb-5">
+    © 2025 All rights reserved to Anticoder03
   </footer>
 
   <script>
@@ -77,7 +40,7 @@
 
       status.textContent = "Scraping... please wait.";
 
-      const res = await fetch(`/scrape?url=${encodeURIComponent(url)}`);
+      const res = await fetch(`/api/scrape?url=${encodeURIComponent(url)}`);
 
       if (!res.ok) {
         status.textContent = "Error scraping the site.";
@@ -94,9 +57,8 @@
       a.click();
       a.remove();
 
-      status.textContent = "✅ Download ready!";
+      status.textContent = "Download ready!";
     }
   </script>
-
 </body>
 </html>

@@ -1,58 +1,61 @@
-const axios = require("axios");
-const cheerio = require("cheerio");
-const { Parser } = require("json2csv");
+import axios from "axios";
+import cheerio from "cheerio";
+import { Parser } from "json2csv";
+import JSZip from "jszip";
 
-function toAbsolute(base, relative) {
-  try { return new URL(relative, base).href; }
-  catch { return relative; }
-}
-
-async function scrapePage(startUrl) {
+export async function scrapeAndZip(START_URL) {
   const visited = new Set();
   const results = [];
 
-  async function scrape(url) {
+  async function scrapePage(url) {
     if (visited.has(url)) return;
     visited.add(url);
 
-    try {
-      const { data } = await axios.get(url);
-      const $ = cheerio.load(data);
+    const base = new URL(url);
 
-      $("*").each((_, el) => {
-        const text = $(el).text().trim();
-        const rawImg = $(el).find("img").attr("src");
-        const image = rawImg ? toAbsolute(url, rawImg) : "";
+    const { data } = await axios.get(url);
+    const $ = cheerio.load(data);
 
-        if (text || image) {
-          results.push({ page: url, text, image });
-        }
-      });
+    $("*").each((_, el) => {
+      const text = $(el).text().trim();
+      let img = $(el).find("img").attr("src");
 
-      const links = $("a[href]")
-        .map((_, a) => $(a).attr("href"))
-        .get()
-        .map(h => toAbsolute(url, h))
-        .filter(h => h.startsWith(new URL(startUrl).origin));
+      if (img) img = new URL(img, base.origin).href;
 
-      for (const link of links) {
-        await scrape(link);
+      if (text || img) {
+        results.push({
+          page: url,
+          text: text || "",
+          image: img || ""
+        });
       }
+    });
 
-    } catch (err) {
-      console.log("Error scraping:", url, err.message);
+    // follow children pages
+    const links = $("a[href]")
+      .map((_, a) => $(a).attr("href"))
+      .get()
+      .filter(h => h && !h.startsWith("#"));
+
+    for (let link of links) {
+      link = new URL(link, base.origin).href;
+      if (link.startsWith(base.origin)) {
+        await scrapePage(link);
+      }
     }
   }
 
-  await scrape(startUrl);
+  await scrapePage(START_URL);
 
-  // Convert results to JSON & CSV
+  // Convert to files
   const jsonOutput = JSON.stringify(results, null, 2);
-
   const parser = new Parser();
   const csvOutput = parser.parse(results);
 
-  return { jsonOutput, csvOutput };
-}
+  // Create ZIP
+  const zip = new JSZip();
+  zip.file("output.json", jsonOutput);
+  zip.file("output.csv", csvOutput);
 
-module.exports = scrapePage;
+  return await zip.generateAsync({ type: "nodebuffer" });
+}

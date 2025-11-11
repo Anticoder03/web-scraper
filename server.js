@@ -1,36 +1,25 @@
-const express = require("express");
-const path = require("path");
-const cors = require("cors");
-const scrapePage = require("./scraper");
-const archiver = require("archiver");
+import express from "express";
+import cors from "cors";
+import { scrapeAndZip } from "./scraper.js";
 
 const app = express();
 app.use(cors());
-app.use(express.static("public"));
 
 app.get("/scrape", async (req, res) => {
-  const siteUrl = req.query.url;
-  if (!siteUrl) return res.status(400).send("URL is required");
-
   try {
-    console.log("Scraping:", siteUrl);
-    const { jsonOutput, csvOutput } = await scrapePage(siteUrl);
+    const url = req.query.url;
+    if (!url) return res.status(400).send("Missing url");
+
+    const buffer = await scrapeAndZip(url);
 
     res.setHeader("Content-Type", "application/zip");
     res.setHeader("Content-Disposition", "attachment; filename=scraped_data.zip");
-
-    const archive = archiver("zip");
-    archive.pipe(res);
-
-    archive.append(jsonOutput, { name: "data.json" });
-    archive.append(csvOutput, { name: "data.csv" });
-
-    archive.finalize();
+    res.send(buffer);
 
   } catch (err) {
-    console.log(err);
-    res.status(500).send("Scraping failed.");
+    console.error(err);
+    res.status(500).send("Error");
   }
 });
 
-app.listen(3000, () => console.log("✅ UI running at http://localhost:3000"));
+app.listen(3000, () => console.log("Local server running at http://localhost:3000"));
