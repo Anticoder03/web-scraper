@@ -1,0 +1,22 @@
+{
+  "name": "web-proj",
+  "version": "1.0.0",
+  "description": "A fast, no-nonsense scraper for extracting **text** and **images** from any webpage — perfect for one-off scraping tasks, research, importing into your own tools, or pulling structured content from static sites.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "axios": "^1.13.2",
+    "cheerio": "^1.1.2",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "json2csv": "^6.0.0-alpha.2"
+  }
+}
